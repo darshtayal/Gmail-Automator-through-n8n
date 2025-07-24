@@ -1,0 +1,621 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "includeSpamTrash": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ed50da2e-1b95-4868-adb5-1e45c7a31ce8",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0wt5Hw9ehZBFCTwa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.from.value[0].name }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Sender Name",
+              "description": "Extract the sender's name from the email. If the name is not available, return an  empty string",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an extraction expert. Identify and extract only the key information from the text. If a required attribute is not present, return an empty string as its value "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "39b2b219-426c-423a-920a-69cf4dd2205f",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        144,
+        208
+      ],
+      "id": "587e49cc-7c00-4ec2-943c-546deeb5edbf",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "1yMfPHbcVcH6X24t",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "aaf95d41-ea6b-4d35-b5ad-19b31a405018",
+              "leftValue": "={{ $json.output['Sender Name'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "a3e65692-8d28-457d-8dbb-b419a37f276e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d68589fb-3951-4cad-ad6a-adaee81e3d5f",
+              "name": "Introduction",
+              "value": "Hey",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        96
+      ],
+      "id": "cdbf71c4-c619-4a94-92ae-fed144a6e29b",
+      "name": "No name"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cef532ae-6b2b-42bc-9031-96afb256e664",
+              "name": "introduction",
+              "value": "=Dear  {{ $json.output['Sender Name'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        -96
+      ],
+      "id": "113d5450-c04e-45e5-a76e-6f125b100962",
+      "name": "name found"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1008,
+        -16
+      ],
+      "id": "9d2b9887-b929-46ea-b506-d9ada527607b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "91e407bf-8d41-4dda-9f16-3259abb61863",
+              "name": "introduction",
+              "value": "={{ $json.introduction }}",
+              "type": "string"
+            },
+            {
+              "id": "7f67874c-0c55-47d4-bf8c-60110f3bd27a",
+              "name": "emailBody",
+              "value": "={{ $('Gmail Trigger').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "ed8536ea-8bc0-49b9-b5e4-010705fe86f8",
+              "name": "messageID",
+              "value": "={{ $('Gmail Trigger').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "438f60b6-ac8e-4636-ba4f-7c560998d563",
+              "name": "threadID",
+              "value": "={{ $('Gmail Trigger').item.json.threadId }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1232,
+        0
+      ],
+      "id": "35d809af-7787-427c-bb9c-52f17d6d5ef9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.emailBody }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "n8n Messages",
+              "description": "This includes people discussing about n8n"
+            },
+            {
+              "category": "Langgraph Messages",
+              "description": "This includes messages based on langgraph"
+            },
+            {
+              "category": "Personal Messages",
+              "description": "This includes messages based on personal life outside work"
+            },
+            {
+              "category": "Any Messages",
+              "description": "This includes messages that are not from any of the above categories"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "Please classify the text provided by the user into one of the following categories: {categories}, and use the provided formatting instructions below. Don't explain, and only output the json."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        1424,
+        -16
+      ],
+      "id": "cda8a71f-faba-4a1d-9609-4031d8f2b916",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": "gemma2-9b-it",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        208
+      ],
+      "id": "31be3a41-b5e1-4ada-8954-3ef52eff6cde",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "1yMfPHbcVcH6X24t",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "labelIds": [
+          "Label_3359117729413329405"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1840,
+        -80
+      ],
+      "id": "17a5104a-e40e-42df-b6ae-cb6010d77d10",
+      "name": "Add label to message",
+      "webhookId": "a6c3bfc2-824d-496c-8a54-9bf99665007c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0wt5Hw9ehZBFCTwa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "labelIds": [
+          "Label_3054083856440685021"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1824,
+        -288
+      ],
+      "id": "9d25d17e-38ce-42c7-b6f6-070d7231a3d8",
+      "name": "Add label to message1",
+      "webhookId": "a6c3bfc2-824d-496c-8a54-9bf99665007c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0wt5Hw9ehZBFCTwa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "labelIds": [
+          "Label_7359500805631620889"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1840,
+        128
+      ],
+      "id": "cf271180-a22f-4d09-89a9-5b416d68c377",
+      "name": "Add label to message2",
+      "webhookId": "a6c3bfc2-824d-496c-8a54-9bf99665007c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0wt5Hw9ehZBFCTwa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "labelIds": [
+          "Label_7359500805631620889"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1856,
+        336
+      ],
+      "id": "4490f890-4063-4ceb-a1cd-6fec30c31e71",
+      "name": "Add label to message3",
+      "webhookId": "a6c3bfc2-824d-496c-8a54-9bf99665007c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0wt5Hw9ehZBFCTwa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $json.id }}",
+        "emailType": "text",
+        "message": "={{ $('Edit Fields').item.json.introduction }},\n\nThank you for contacting me! We're exited to learn more about your needs and discuss how we can help you.\n\nYour request has been recieved, and a member of our team is reviewing the details\n\nWe look forward to connecting with you!\n\n<For personal messages>\n\nBest Regards!\nDarsh Tayal\nFounder and CEO",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2096,
+        128
+      ],
+      "id": "4be3cd04-d3bb-4126-8a41-3fc5aad985b5",
+      "name": "Reply to a message1",
+      "webhookId": "6454135f-e2cb-4c61-a190-5ab42a6e39c9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0wt5Hw9ehZBFCTwa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $json.id }}",
+        "emailType": "text",
+        "message": "={{ $('Edit Fields').item.json.introduction }},\n\nThank you for contacting me! We're exited to learn more about your needs and discuss how we can help you.\n\nYour request has been recieved, and a member of our team is reviewing the details\n\nWe look forward to connecting with you!\n\n<For n8n messages>\n\nBest Regards!\nDarsh Tayal\nFounder and CEO",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2096,
+        -288
+      ],
+      "id": "558ecab0-c1a3-4a6f-975f-af1ccc349447",
+      "name": "Reply to a message",
+      "webhookId": "6454135f-e2cb-4c61-a190-5ab42a6e39c9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0wt5Hw9ehZBFCTwa",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $json.id }}",
+        "emailType": "text",
+        "message": "={{ $('Edit Fields').item.json.introduction }},\n\nThank you for contacting me! We're exited to learn more about your needs and discuss how we can help you.\n\nYour request has been recieved, and a member of our team is reviewing the details\n\nWe look forward to connecting with you!\n\n<For Langgraph messages>\n\nBest Regards!\nDarsh Tayal\nFounder and CEO",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2096,
+        -80
+      ],
+      "id": "240e299b-8a91-48eb-b972-dedc8b0223ae",
+      "name": "Reply to a message2",
+      "webhookId": "6454135f-e2cb-4c61-a190-5ab42a6e39c9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0wt5Hw9ehZBFCTwa",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "name found",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "name found": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No name": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Add label to message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message1": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message2": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "85a24680-4821-4e96-a2d4-ccd2562a0b57",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4e0bb9a90638533e24d0bbff4c6a7cdddad4197f9b010201c7f7582140acec4c"
+  },
+  "id": "RRXZsGCYDVSrlFkP",
+  "tags": []
+}
