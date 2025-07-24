@@ -7,7 +7,7 @@ This project is a **Gmail automation workflow built in n8n** that:
 - Adds appropriate **labels** in Gmail based on classification.
 - Sends an **auto-reply email** with a personalized greeting.
 
-> Built by [Darsh Tayal](https://linkedin.com/in/darsh-tayal), Founder & CEO-in-the-making at 16.
+> Built by [Darsh Tayal](https://www.linkedin.com/in/darsh-tayal-48442b25a/), Founder & CEO-in-the-making at 16.
 
 ---
 
