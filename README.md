@@ -105,7 +105,7 @@ Founder and CEO
 
 ## 🤝 Contributions
 
-Open to improvements or forks! If you build something using this or want a tutorial version — feel free to connect on [LinkedIn](https://linkedin.com/in/darsh-tayal) or drop an email.
+Open to improvements or forks! If you build something using this or want a tutorial version — feel free to connect on [LinkedIn](https://www.linkedin.com/in/darsh-tayal-48442b25a/) or drop an email.
 
 ---
 
