@@ -78,3 +78,39 @@ This setup automates that *completely*.
 
 ## 📨 Sample Auto-Reply (Personal Message)
 
+Dear [Sender Name],
+
+Thank you for contacting me! We're excited to learn more about your needs and discuss how we can help you.
+
+Your request has been received, and a member of our team is reviewing the details.
+
+We look forward to connecting with you!
+
+<For personal messages>
+Best Regards,
+Darsh Tayal
+Founder and CEO
+
+
+---
+
+## 🚀 To-Do / Improvements
+
+- [ ] Add logging and monitoring via Telegram or Slack.
+- [ ] Handle attachments or inline media.
+- [ ] Add sentiment analysis for message tone.
+- [ ] Translate responses if email language ≠ English.
+
+---
+
+## 🤝 Contributions
+
+Open to improvements or forks! If you build something using this or want a tutorial version — feel free to connect on [LinkedIn](https://linkedin.com/in/darsh-tayal) or drop an email.
+
+---
+
+## 🧒 Built With Pride
+
+By a 16-year-old learning the ropes of AI automation — one Gmail thread at a time 💻🚀
+
+
